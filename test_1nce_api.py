@@ -18,7 +18,7 @@ load_dotenv()
 
 app = FastAPI(
     title="1NCE API Test Service",
-    description="Backend API for 1NCE IoT Management.\n\n[**Go to Streamlit Frontend**](http://localhost:8501)",
+    description="Backend API for 1NCE IoT Management.\n\n[**Go to Streamlit Frontend**](/)",
     version="1.0.0"
 )
 

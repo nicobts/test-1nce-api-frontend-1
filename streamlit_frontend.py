@@ -165,7 +165,7 @@ with st.sidebar:
 
     st.divider()
 
-    st.markdown("📚 [**API Documentation**](http://localhost:8000/docs)")
+    st.markdown("📚 [**API Documentation**](/docs)")
 
 
 # Main content area

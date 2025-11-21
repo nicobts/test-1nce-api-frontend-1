@@ -19,13 +19,13 @@ services:
       - "traefik.http.middlewares.1nce-headers.headers.browserXSSFilter=true"
       - "traefik.http.middlewares.1nce-headers.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.1nce-headers.headers.forceSTSHeader=true"
-      - "traefik.http.middlewares.1nce-headers.headers.SSLHost=cloudstack.app"
+      - "traefik.http.middlewares.1nce-headers.headers.SSLHost=${SUBDOMAIN}.${DOMAIN_NAME}"
       - "traefik.http.middlewares.1nce-headers.headers.STSIncludeSubdomains=true"
       - "traefik.http.middlewares.1nce-headers.headers.STSPreload=true"
 
       # --- Streamlit Router (Frontend - Port 8501) ---
       # Matches root and everything NOT matched by the API router
-      - "traefik.http.routers.1nce-streamlit.rule=Host(`1nce-test1.cloudstack.app`)"
+      - "traefik.http.routers.1nce-streamlit.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`)"
       - "traefik.http.routers.1nce-streamlit.entrypoints=web,websecure"
       - "traefik.http.routers.1nce-streamlit.tls=true"
       - "traefik.http.routers.1nce-streamlit.tls.certresolver=letsencryptresolver"
@@ -35,7 +35,7 @@ services:
 
       # --- FastAPI Router (Backend Docs - Port 8000) ---
       # Matches specific API paths to route to the backend
-      - "traefik.http.routers.1nce-api.rule=Host(`1nce-test1.cloudstack.app`) && (PathPrefix(`/docs`) || PathPrefix(`/openapi.json`) || PathPrefix(`/redoc`))"
+      - "traefik.http.routers.1nce-api.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`) && (PathPrefix(`/docs`) || PathPrefix(`/openapi.json`) || PathPrefix(`/redoc`))"
       - "traefik.http.routers.1nce-api.entrypoints=web,websecure"
       - "traefik.http.routers.1nce-api.tls=true"
       - "traefik.http.routers.1nce-api.tls.certresolver=letsencryptresolver"
