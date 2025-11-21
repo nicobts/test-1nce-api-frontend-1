@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  app:
+    image: 1nce-sim-app-test-1
+    build: .
+    container_name: 1nce-sim-app-container
+    ports:
+      - "8000:8000"
+      - "8501:8501"
+    environment:
+      # Credentials should be entered in the UI
+      - ONCE_USERNAME=
+      - ONCE_PASSWORD=
+      - ONCE_ORGANIZATION_ID=
+    # The Dockerfile CMD is ["python", "run_full_app.py"], which runs both backend and frontend.
+    restart: unless-stopped
