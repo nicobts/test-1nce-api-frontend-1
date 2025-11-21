@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  app:
+    image: 1nce-sim-app-test-1
+    build: .
+    container_name: 1nce-sim-app-container
+    restart: unless-stopped
+    environment:
+      - ONCE_USERNAME=
+      - ONCE_PASSWORD=
+      - ONCE_ORGANIZATION_ID=
+    labels:
+      - "traefik.enable=true"
+      
+      # --- Middleware Configuration (Shared) ---
+      - "traefik.http.middlewares.1nce-headers.headers.SSLRedirect=true"
+      - "traefik.http.middlewares.1nce-headers.headers.STSSeconds=315360000"
+      - "traefik.http.middlewares.1nce-headers.headers.browserXSSFilter=true"
+      - "traefik.http.middlewares.1nce-headers.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.1nce-headers.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.1nce-headers.headers.SSLHost=cloudstack.app"
+      - "traefik.http.middlewares.1nce-headers.headers.STSIncludeSubdomains=true"
+      - "traefik.http.middlewares.1nce-headers.headers.STSPreload=true"
+
+      # --- Streamlit Router (Frontend - Port 8501) ---
+      # Matches root and everything NOT matched by the API router
+      - "traefik.http.routers.1nce-streamlit.rule=Host(`1nce-test1.cloudstack.app`)"
+      - "traefik.http.routers.1nce-streamlit.entrypoints=web,websecure"
+      - "traefik.http.routers.1nce-streamlit.tls=true"
+      - "traefik.http.routers.1nce-streamlit.tls.certresolver=letsencryptresolver"
+      - "traefik.http.routers.1nce-streamlit.middlewares=1nce-headers"
+      - "traefik.http.routers.1nce-streamlit.service=1nce-streamlit-svc"
+      - "traefik.http.services.1nce-streamlit-svc.loadbalancer.server.port=8501"
+
+      # --- FastAPI Router (Backend Docs - Port 8000) ---
+      # Matches specific API paths to route to the backend
+      - "traefik.http.routers.1nce-api.rule=Host(`1nce-test1.cloudstack.app`) && (PathPrefix(`/docs`) || PathPrefix(`/openapi.json`) || PathPrefix(`/redoc`))"
+      - "traefik.http.routers.1nce-api.entrypoints=web,websecure"
+      - "traefik.http.routers.1nce-api.tls=true"
+      - "traefik.http.routers.1nce-api.tls.certresolver=letsencryptresolver"
+      - "traefik.http.routers.1nce-api.middlewares=1nce-headers"
+      - "traefik.http.routers.1nce-api.service=1nce-api-svc"
+      - "traefik.http.services.1nce-api-svc.loadbalancer.server.port=8000"
+
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external: true
